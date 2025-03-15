@@ -10,6 +10,7 @@ int main() {
   const long N =   1'000'000'000;
   const double dx = 1.0f/(N-1);
   const int num_threads = omp_get_max_threads();
+  std::cout<<"num_threads:"<<num_threads<<std::endl;
 
   double sum = 0.;
 
@@ -26,12 +27,15 @@ int main() {
       double x = i*dx;
       partial_sums[n] += 4.0f/(1.0f + x*x)*dx;
     }
+
+    #pragma omp atomic
+    sum+=partial_sums;
   }
 
-  for(int i = 0; i < num_threads; i++)
-  {
-    sum += partial_sums[i];
-  }
+  // for(int i = 0; i < num_threads; i++)
+  // {
+  //   sum += partial_sums[i];
+  // }
 
   double elapsed = timer.elapsed();
 
