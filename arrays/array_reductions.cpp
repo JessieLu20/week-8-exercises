@@ -23,17 +23,18 @@ int main()
         histogram[i] = 0;
     }
 
-    for (int i = 0; i < N; i++)
-    {
-        double x = rand_list[i];
-        if (x < -3 || x >= 3)
+    #pragma omp parallel for reduction(+:histogram[:bins])
+        for (int i = 0; i < N; i++)
         {
-            continue;
-        }
+            double x = rand_list[i];
+            if (x < -3 || x >= 3)
+            {
+                continue;
+            }
 
-        int idx = static_cast<int>(((x + 3) / 6) * bins);
-        histogram[idx]++;
-    }
+            int idx = static_cast<int>(((x + 3) / 6) * bins);
+            histogram[idx]++;
+        }
 
     for(int i = 0; i < bins; i++)
     {
