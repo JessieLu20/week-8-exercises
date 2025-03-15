@@ -15,11 +15,20 @@ int main() {
   auto start = high_resolution_clock::now();
 
   double sum = 0.0f;
-  #pragma omp parallel for
-  for(int i=0; i<N; ++i) {
-    double x = i*dx;
-    sum += 4.0f/(1.0f + x*x)*dx;
+ 
+  
+  #pragma omp parallel
+  {
+    double partial_sums = 0.0f;
+    #pragma omp for
+    for(int i=0; i<N; ++i) {
+      double x = i*dx;
+      partial_sums += 4.0f/(1.0f + x*x)*dx;
+    }
+    #pragma omp atomic
+    sum+=partial_sums;
   }
+
 
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<milliseconds>(stop - start);
